@@ -1,0 +1,36 @@
+# === Security Gates (CRITICAL) ===
+.env
+.env.*
+*.pem
+*.key
+
+# === Python Environment & Dependencies ===
+.venv/
+venv/
+ENV/
+env/
+wheels/
+*.egg-info/
+.eggs/
+
+# === Python Caches and Compiled Files ===
+__pycache__/
+*.py[cod]
+*$py.class
+
+# === OS & IDE specific files ===
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# === Testing & Static Analysis Caches ===
+.pytest_cache/
+.coverage
+htmlcov/
+.semgrep/
+.semgrep_cache/
