@@ -1,0 +1,60 @@
+{
+  "interactions": [
+    {
+      "drug_a": "warfarin",
+      "drug_b": "aspirin",
+      "severity": "High",
+      "risk": "Increased Risk of Bleeding",
+      "description": "Combining warfarin (an anticoagulant) and aspirin (an antiplatelet) can synergistically increase the risk of severe internal bleeding, including gastrointestinal and intracranial hemorrhage. Monitor closely if co-prescribed."
+    },
+    {
+      "drug_a": "sildenafil",
+      "drug_b": "nitroglycerin",
+      "severity": "Critical",
+      "risk": "Severe Hypotension (Life-Threatening)",
+      "description": "Co-administration of sildenafil (Viagra) and nitroglycerin or other nitrates can cause a dramatic, sudden, and potentially life-threatening drop in blood pressure. This combination is strictly contraindicated."
+    },
+    {
+      "drug_a": "lisinopril",
+      "drug_b": "spironolactone",
+      "severity": "Medium",
+      "risk": "Hyperkalemia (High Potassium)",
+      "description": "Both lisinopril (an ACE inhibitor) and spironolactone (a potassium-sparing diuretic) promote potassium retention. Combining them can lead to elevated potassium levels (hyperkalemia), which can affect heart rhythm."
+    },
+    {
+      "drug_a": "ibuprofen",
+      "drug_b": "aspirin",
+      "severity": "Medium",
+      "risk": "Gastrointestinal Toxicity & Reduced Aspirin Efficacy",
+      "description": "Ibuprofen can interfere with the cardioprotective antiplatelet effect of low-dose aspirin. Additionally, using both NSAIDs simultaneously increases the risk of stomach ulcers and gastrointestinal bleeding."
+    },
+    {
+      "drug_a": "simvastatin",
+      "drug_b": "amlodipine",
+      "severity": "Medium",
+      "risk": "Simvastatin Toxicity (Myopathy Risk)",
+      "description": "Amlodipine increases the systemic exposure of simvastatin. Higher simvastatin exposure increases the risk of muscle pain, weakness, or rhabdomyolysis. Simvastatin dose should be limited to 20mg daily."
+    },
+    {
+      "drug_a": "ciprofloxacin",
+      "drug_b": "calcium carbonate",
+      "severity": "Medium",
+      "risk": "Reduced Antibiotic Absorption",
+      "description": "Calcium ions chelate ciprofloxacin in the digestive tract, significantly reducing its absorption and efficacy. Administer ciprofloxacin at least 2 hours before or 6 hours after calcium supplements or antacids."
+    },
+    {
+      "drug_a": "phenelzine",
+      "drug_b": "sertraline",
+      "severity": "Critical",
+      "risk": "Serotonin Syndrome (Life-Threatening)",
+      "description": "Combining Monoamine Oxidase Inhibitors (MAOIs) like phenelzine with SSRIs like sertraline can lead to excessive accumulation of serotonin, causing severe agitation, high blood pressure, hyperthermia, and potentially death."
+    },
+    {
+      "drug_a": "metformin",
+      "drug_b": "contrast dye",
+      "severity": "High",
+      "risk": "Lactic Acidosis Risk",
+      "description": "Iodinated contrast media can cause temporary kidney impairment, leading to accumulation of metformin and an increased risk of metformin-associated lactic acidosis. Metformin should be temporarily discontinued prior to or at the time of the procedure."
+    }
+  ]
+}
