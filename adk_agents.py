@@ -194,18 +194,12 @@ def run_agent_query(user_id: str, session_id: str, query: str) -> str:
     if redacted_items:
         logger.info(f"Redacted sensitive items in query: {redacted_items.keys()}")
         
-    # 2. Ensure session exists in the session service
-    try:
-        session_service.get_session_sync(app_name="safemed_app", user_id=user_id, session_id=session_id)
-    except Exception:
-        # Session not found, let's create it
-        session_service.create_session_sync(app_name="safemed_app", user_id=user_id, session_id=session_id)
-
-    # 3. Create Runner
+    # 2. Create Runner
     runner = Runner(
         agent=triage_agent,
         app_name="safemed_app",
-        session_service=session_service
+        session_service=session_service,
+        auto_create_session=True
     )
 
     # 4. Invoke agent
