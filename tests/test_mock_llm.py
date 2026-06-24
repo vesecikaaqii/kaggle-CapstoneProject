@@ -10,7 +10,7 @@ class MockLlm(BaseLlm):
     def supported_models(cls) -> list[str]:
         return ["mock-model"]
 
-    async def generate_content(self, llm_request: LlmRequest, stream: bool = False):
+    async def generate_content_async(self, llm_request: LlmRequest, stream: bool = False):
         yield LlmResponse(
             content=types.Content(
                 role="model",
@@ -27,10 +27,13 @@ async def test_run():
         model="mock-model",
         instruction="Test"
     )
+    session_service = InMemorySessionService()
+    session_service.create_session_sync(app_name="test_app", user_id="u1", session_id="s1")
+    
     runner = Runner(
         agent=agent,
         app_name="test_app",
-        session_service=InMemorySessionService()
+        session_service=session_service
     )
     user_message = types.Content(
         role="user",
