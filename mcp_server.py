@@ -6,14 +6,11 @@ import logging
 from typing import List, Dict, Any
 from mcp.server.fastmcp import FastMCP
 
-# Setup error logging to stderr, as stdout is reserved for JSON-RPC
 logging.basicConfig(level=logging.INFO, stream=sys.stderr)
 logger = logging.getLogger("safemed-mcp")
 
-# Initialize FastMCP Server
 mcp = FastMCP("SafeMed-Server")
 
-# Path to the local database
 DB_PATH = os.path.join(os.path.dirname(__file__), "data", "interactions_db.json")
 
 def load_local_db() -> Dict[str, Any]:
@@ -42,11 +39,9 @@ def check_local_interactions(drug_list: List[str]) -> str:
     db = load_local_db()
     interactions = db.get("interactions", [])
     
-    # Normalize drug names to lowercase
     normalized_input = [drug.strip().lower() for drug in drug_list]
     found_interactions = []
     
-    # Check all pairs in the input list
     for i in range(len(normalized_input)):
         for j in range(i + 1, len(normalized_input)):
             drug1 = normalized_input[i]
@@ -56,7 +51,6 @@ def check_local_interactions(drug_list: List[str]) -> str:
                 da = interact["drug_a"].lower()
                 db_name = interact["drug_b"].lower()
                 
-                # Check both directions (drug_a + drug_b or drug_b + drug_a)
                 if (da == drug1 and db_name == drug2) or (da == drug2 and db_name == drug1):
                     found_interactions.append(interact)
                     
@@ -105,7 +99,6 @@ def search_fda_drug_label(drug_name: str) -> str:
             
         label = results[0]
         
-        # Extract safety sections
         brand_name = label.get("openfda", {}).get("brand_name", [drug_name])[0]
         generic_name = label.get("openfda", {}).get("generic_name", ["N/A"])[0]
         
@@ -156,7 +149,6 @@ def generate_dosage_schedule(medications_and_dosing: List[Dict[str, str]], daily
         "Night (approx. 10:00 PM)": []
     }
     
-    # Adjust names if daily_start_hour differs (simple heuristic representation)
     for med in medications_and_dosing:
         name = med.get("name", "Unknown").title()
         dose = med.get("dose", "1 pill")
@@ -164,7 +156,6 @@ def generate_dosage_schedule(medications_and_dosing: List[Dict[str, str]], daily
         
         entry = f"{name} - {dose}"
         
-        # Check specific time-of-day qualifiers FIRST before generic "once/daily"
         if "night" in freq or "bedtime" in freq or "qhs" in freq:
             schedule["Night (approx. 10:00 PM)"].append(entry)
         elif "evening" in freq:
@@ -193,13 +184,10 @@ def generate_dosage_schedule(medications_and_dosing: List[Dict[str, str]], daily
             schedule["Evening (approx. 6:00 PM)"].append(entry + " (3rd dose ~8 PM)")
             schedule["Night (approx. 10:00 PM)"].append(entry + " (4th dose ~2 AM)")
         elif ("once" in freq or "daily" in freq) and "twice" not in freq and "three" not in freq and "every" not in freq:
-            # Generic once-daily → morning default
             schedule["Morning (approx. 8:00 AM)"].append(entry)
         else:
-            # Unknown frequency — default to morning with annotation
             schedule["Morning (approx. 8:00 AM)"].append(entry + f" (Frequency: {freq.title()})")
             
-    # Format schedule string
     lines = ["📅 --- OPTIMIZED DOSAGE SCHEDULE TIMELINE ---"]
     for slot, items in schedule.items():
         lines.append(f"\n⏰ {slot}:")
