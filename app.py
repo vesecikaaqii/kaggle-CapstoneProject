@@ -5,12 +5,10 @@ import json
 import logging
 from datetime import datetime
 
-# Import agent and security modules
 from adk_agents import run_agent_query, MODEL_NAME, GEMINI_KEY
 from mcp_server import check_local_interactions, generate_dosage_schedule
 from security import MEDICAL_DISCLAIMER
 
-# Page configuration
 st.set_page_config(
     page_title="SafeMed Concierge - Smart Medication Safety Agent",
     page_icon="🩺",
@@ -18,7 +16,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── Premium Dark-Mode Glassmorphism CSS ──────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -466,7 +463,6 @@ hr { border-color: rgba(56, 189, 248, 0.1) !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Session State Initialization ─────────────────────────────────────────────
 if "medications" not in st.session_state:
     st.session_state.medications = [
         {"name": "Lisinopril",  "dose": "10mg", "frequency": "Once daily"},
@@ -487,7 +483,6 @@ if "session_id" not in st.session_state:
 if "schedule_data" not in st.session_state:
     st.session_state.schedule_data = None
 
-# Quick-test drug pairs
 QUICK_TEST_PAIRS = [
     {"label": "🚨 Warfarin + Aspirin",           "meds": [{"name": "Warfarin",     "dose": "5mg",  "frequency": "Once daily"}, {"name": "Aspirin",        "dose": "81mg",  "frequency": "Once daily"}]},
     {"label": "🚨 Sildenafil + Nitroglycerin",   "meds": [{"name": "Sildenafil",   "dose": "50mg", "frequency": "As needed"},  {"name": "Nitroglycerin",  "dose": "0.4mg", "frequency": "As needed"}]},
@@ -497,7 +492,6 @@ QUICK_TEST_PAIRS = [
     {"label": "⚠️ Ciprofloxacin + Calcium",    "meds": [{"name": "Ciprofloxacin","dose": "500mg","frequency": "Twice daily"},{"name": "Calcium Carbonate","dose": "500mg","frequency": "Once daily"}]},
 ]
 
-# ── SIDEBAR ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     try:
         st.image("header.png", use_container_width=True)
@@ -506,7 +500,6 @@ with st.sidebar:
 
     st.markdown("## 🛡️ SafeMed Concierge")
 
-    # Model status
     if GEMINI_KEY:
         st.markdown('<span class="pill pill-green">🤖 Live Gemini AI Engine</span>', unsafe_allow_html=True)
     else:
@@ -538,7 +531,6 @@ with st.sidebar:
 
     st.markdown(f'<div class="disclaimer-box">🔬 <b>Medical Disclaimer:</b>{MEDICAL_DISCLAIMER}</div>', unsafe_allow_html=True)
 
-# ── HEADER BANNER ─────────────────────────────────────────────────────────────
 med_count   = len(st.session_state.medications)
 model_label = "Gemini 2.5 Flash" if GEMINI_KEY else "Local Simulation"
 
@@ -555,15 +547,10 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ── LAYOUT: two columns ───────────────────────────────────────────────────────
 col_left, col_right = st.columns([1, 1], gap="large")
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LEFT COLUMN — Medication Log & Scheduler
-# ════════════════════════════════════════════════════════════════════════════
 with col_left:
 
-    # ── Section header with badge ─────────────────────────────────────────
     st.markdown(f"""
     <div class="section-header">
         <span style="font-size:1.25rem;">📋</span>
@@ -572,7 +559,6 @@ with col_left:
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Medication list ───────────────────────────────────────────────────
     if not st.session_state.medications:
         st.markdown('<div class="alert-safe"><div class="alert-body">📭 No medications logged yet. Add your first medication below.</div></div>', unsafe_allow_html=True)
     else:
@@ -597,7 +583,6 @@ with col_left:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Add Medication Expander ────────────────────────────────────────────
     with st.expander("➕ Add Medication", expanded=False):
         tab_manual, tab_scan = st.tabs(["✍️ Manual Entry", "📷 Scan Prescription"])
 
@@ -648,7 +633,6 @@ with col_left:
 
     st.markdown("---")
 
-    # ── Optimized Daily Schedule ───────────────────────────────────────────
     st.markdown("""
     <div class="section-header">
         <span style="font-size:1.25rem;">📅</span>
@@ -676,7 +660,6 @@ with col_left:
                 use_container_width=True
             )
 
-        # Parse schedule into visual timeline
         slot_icons = {
             "Morning":   "🌅",
             "Afternoon": "☀️",
@@ -731,7 +714,6 @@ with col_left:
                 key=f"chk_{med['name']}_{med['dose']}"
             )
 
-        # Ciprofloxacin warning if relevant
         med_names_lower = [m["name"].lower() for m in st.session_state.medications]
         if "ciprofloxacin" in med_names_lower and "calcium carbonate" in med_names_lower:
             st.markdown("""
@@ -741,13 +723,8 @@ with col_left:
             </div>
             """, unsafe_allow_html=True)
 
-
-# ════════════════════════════════════════════════════════════════════════════
-#  RIGHT COLUMN — Safety Board & AI Chat
-# ════════════════════════════════════════════════════════════════════════════
 with col_right:
 
-    # ── Drug-Drug Interaction Safety Board ────────────────────────────────
     st.markdown("""
     <div class="section-header">
         <span style="font-size:1.25rem;">⚠️</span>
@@ -790,7 +767,6 @@ with col_right:
 
     st.markdown("---")
 
-    # ── AI Chat ───────────────────────────────────────────────────────────
     chat_header_col, clear_col = st.columns([4, 1])
     with chat_header_col:
         st.markdown("""
@@ -813,7 +789,6 @@ with col_right:
 
     st.markdown("<small style='color:#64748b;'>Ask about drug interactions, FDA warnings, or your dosing schedule.</small>", unsafe_allow_html=True)
 
-    # Render chat history as styled bubbles
     chat_container = st.container(height=380)
     with chat_container:
         for msg in st.session_state.chat_history:
@@ -829,7 +804,6 @@ with col_right:
                     if ts:
                         st.caption(ts)
 
-    # Chat input
     if user_query := st.chat_input("Ask about your medications or interactions..."):
         now = datetime.now().strftime("%H:%M")
         st.session_state.chat_history.append({
