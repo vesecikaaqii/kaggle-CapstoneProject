@@ -13,20 +13,13 @@ from unittest.mock import patch, MagicMock
 import sys
 import os
 
-# Ensure project root is on path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from mcp_server import check_local_interactions, generate_dosage_schedule, search_fda_drug_label
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  check_local_interactions
-# ══════════════════════════════════════════════════════════════════════════════
-
 class TestCheckLocalInteractions:
     """Tests for the local drug-interaction database checker."""
 
-    # ── All 8 known pairs ────────────────────────────────────────────────────
 
     def test_warfarin_aspirin_high(self):
         res = json.loads(check_local_interactions(["warfarin", "aspirin"]))
@@ -71,7 +64,6 @@ class TestCheckLocalInteractions:
         assert res["status"] == "Warning"
         assert any("lactic acidosis" in i["risk"].lower() for i in res["interactions_found"])
 
-    # ── Bidirectionality ─────────────────────────────────────────────────────
 
     def test_bidirectional_aspirin_warfarin(self):
         """Swapping order should still detect the interaction."""
@@ -86,7 +78,6 @@ class TestCheckLocalInteractions:
         res_rev = json.loads(check_local_interactions(["nitroglycerin","sildenafil"]))
         assert res_fwd["status"] == res_rev["status"] == "Warning"
 
-    # ── Case insensitivity ────────────────────────────────────────────────────
 
     def test_case_insensitive_lookup(self):
         res = json.loads(check_local_interactions(["WARFARIN", "ASPIRIN"]))
@@ -96,7 +87,6 @@ class TestCheckLocalInteractions:
         res = json.loads(check_local_interactions(["Warfarin", "Aspirin"]))
         assert res["status"] == "Warning"
 
-    # ── Safe combinations ────────────────────────────────────────────────────
 
     def test_safe_amoxicillin_vitamin_c(self):
         res = json.loads(check_local_interactions(["amoxicillin", "vitamin c"]))
@@ -116,7 +106,6 @@ class TestCheckLocalInteractions:
         res = json.loads(check_local_interactions(["magicpill", "fantasydrug"]))
         assert res["status"] == "Safe"
 
-    # ── Multiple interactions in one call ────────────────────────────────────
 
     def test_multiple_interactions_detected(self):
         """Three drugs that produce two known interactions."""
@@ -125,7 +114,6 @@ class TestCheckLocalInteractions:
         assert res["status"] == "Warning"
         assert len(res["interactions_found"]) == 2
 
-    # ── Return structure ─────────────────────────────────────────────────────
 
     def test_return_is_valid_json_string(self):
         result = check_local_interactions(["warfarin", "aspirin"])
@@ -141,14 +129,9 @@ class TestCheckLocalInteractions:
             assert field in interaction, f"Missing field: {field}"
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  generate_dosage_schedule
-# ══════════════════════════════════════════════════════════════════════════════
-
 class TestGenerateDosageSchedule:
     """Tests for schedule generation, including the fixed operator-precedence bug."""
 
-    # ── "Once daily at night" bug fix ────────────────────────────────────────
 
     def test_once_daily_at_night_goes_to_night_slot(self):
         """
@@ -158,7 +141,6 @@ class TestGenerateDosageSchedule:
         meds = [{"name": "Simvastatin", "dose": "20mg", "frequency": "Once daily at night"}]
         schedule = generate_dosage_schedule(meds)
         assert "Night (approx. 10:00 PM):" in schedule
-        # Must appear in night section
         night_idx    = schedule.index("Night (approx. 10:00 PM):")
         simvastatin_idx = schedule.index("Simvastatin")
         assert simvastatin_idx > night_idx, "Simvastatin should appear after the Night slot header"
@@ -170,36 +152,30 @@ class TestGenerateDosageSchedule:
         lisinopril_idx  = schedule.index("Lisinopril")
         assert lisinopril_idx > morning_idx
 
-    # ── Twice daily ──────────────────────────────────────────────────────────
 
     def test_twice_daily_morning_and_night(self):
         meds = [{"name": "Metformin", "dose": "500mg", "frequency": "Twice daily"}]
         schedule = generate_dosage_schedule(meds)
-        # Should appear twice
         assert schedule.count("Metformin") == 2
 
-    # ── Three times daily ────────────────────────────────────────────────────
 
     def test_three_times_daily(self):
         meds = [{"name": "Amoxicillin", "dose": "250mg", "frequency": "Three times daily"}]
         schedule = generate_dosage_schedule(meds)
         assert schedule.count("Amoxicillin") == 3
 
-    # ── Every 8 hours ────────────────────────────────────────────────────────
 
     def test_every_8_hours_three_slots(self):
         meds = [{"name": "Ibuprofen", "dose": "400mg", "frequency": "Every 8 hours"}]
         schedule = generate_dosage_schedule(meds)
         assert schedule.count("Ibuprofen") == 3
 
-    # ── Every 6 hours ────────────────────────────────────────────────────────
 
     def test_every_6_hours_four_slots(self):
         meds = [{"name": "Penicillin", "dose": "250mg", "frequency": "Every 6 hours"}]
         schedule = generate_dosage_schedule(meds)
         assert schedule.count("Penicillin") == 4
 
-    # ── Night qualifier ──────────────────────────────────────────────────────
 
     def test_bedtime_goes_to_night(self):
         meds = [{"name": "Zolpidem", "dose": "10mg", "frequency": "Bedtime"}]
@@ -208,7 +184,6 @@ class TestGenerateDosageSchedule:
         zolpidem_idx = schedule.index("Zolpidem")
         assert zolpidem_idx > night_idx
 
-    # ── Evening qualifier ────────────────────────────────────────────────────
 
     def test_evening_goes_to_evening_slot(self):
         meds = [{"name": "Vitamin D", "dose": "1000 IU", "frequency": "Once daily at evening"}]
@@ -218,7 +193,6 @@ class TestGenerateDosageSchedule:
         vitamin_idx = schedule.index("Vitamin D")
         assert vitamin_idx > evening_idx
 
-    # ── Multiple medications ──────────────────────────────────────────────────
 
     def test_multiple_meds_schedule(self):
         meds = [
@@ -229,7 +203,6 @@ class TestGenerateDosageSchedule:
         assert "Lisinopril"  in schedule
         assert "Simvastatin" in schedule
 
-    # ── Return structure ─────────────────────────────────────────────────────
 
     def test_returns_string(self):
         result = generate_dosage_schedule([{"name": "A", "dose": "1mg", "frequency": "Once daily"}])
@@ -244,11 +217,6 @@ class TestGenerateDosageSchedule:
         schedule = generate_dosage_schedule([])
         assert isinstance(schedule, str)
         assert "Morning" in schedule
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  search_fda_drug_label  (mocked HTTP)
-# ══════════════════════════════════════════════════════════════════════════════
 
 class TestSearchFdaDrugLabel:
     """Tests for the openFDA API searcher with mocked HTTP requests."""

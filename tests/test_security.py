@@ -25,14 +25,9 @@ from security import (
 )
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  mask_pii
-# ══════════════════════════════════════════════════════════════════════════════
-
 class TestMaskPii:
     """Tests for PII detection and masking across all 5 pattern types."""
 
-    # ── SSN ──────────────────────────────────────────────────────────────────
 
     def test_ssn_masked(self):
         text, redacted = mask_pii("Patient SSN: 123-45-6789")
@@ -45,7 +40,6 @@ class TestMaskPii:
         assert "[SSN_REDACTED]" not in text
         assert "SSN" not in redacted
 
-    # ── Email ─────────────────────────────────────────────────────────────────
 
     def test_email_masked(self):
         text, redacted = mask_pii("Contact patient at john.doe@example.com for results.")
@@ -61,7 +55,6 @@ class TestMaskPii:
         _, redacted = mask_pii("No email in this text.")
         assert "EMAIL" not in redacted
 
-    # ── Phone ─────────────────────────────────────────────────────────────────
 
     def test_phone_masked(self):
         text, redacted = mask_pii("Call +1-555-019-2834 for an appointment.")
@@ -70,13 +63,10 @@ class TestMaskPii:
 
     def test_phone_plain_format(self):
         text, redacted = mask_pii("Phone: 5550192834 on record.")
-        # Full 10-digit match depends on regex pattern; verify no raw number
-        # Pattern requires grouping: (555) 019-2834 format
-        # Just check the function doesn't crash and returns strings
+        
         assert isinstance(text, str)
         assert isinstance(redacted, dict)
 
-    # ── DOB ───────────────────────────────────────────────────────────────────
 
     def test_dob_masked_slash(self):
         text, redacted = mask_pii("Patient DOB: 12/04/1990")
@@ -93,7 +83,6 @@ class TestMaskPii:
         _, redacted = mask_pii("No date of birth here.")
         assert "DOB" not in redacted
 
-    # ── ZIP ───────────────────────────────────────────────────────────────────
 
     def test_zip_masked_5_digit(self):
         text, redacted = mask_pii("Patient lives at ZIP 90210.")
@@ -104,7 +93,6 @@ class TestMaskPii:
         text, redacted = mask_pii("Full ZIP code: 90210-1234")
         assert "[ZIP_REDACTED]" in text
 
-    # ── Multiple PII types in one string ─────────────────────────────────────
 
     def test_multiple_pii_types(self):
         text = "Patient John (DOB: 12/04/1990, SSN: 123-45-6789) email: j@h.com"
@@ -116,7 +104,6 @@ class TestMaskPii:
         assert "12/04/1990"       not in masked
         assert "j@h.com"          not in masked
 
-    # ── Clean text untouched ──────────────────────────────────────────────────
 
     def test_clean_text_unchanged(self):
         clean = "Please take Lisinopril 10mg once daily."
@@ -124,7 +111,6 @@ class TestMaskPii:
         assert masked == clean
         assert redacted == {}
 
-    # ── Return types ──────────────────────────────────────────────────────────
 
     def test_returns_tuple_of_str_and_dict(self):
         result = mask_pii("some text")
@@ -138,10 +124,6 @@ class TestMaskPii:
         assert masked == ""
         assert redacted == {}
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  verify_output_safety
-# ══════════════════════════════════════════════════════════════════════════════
 
 class TestVerifyOutputSafety:
     """Tests for safety keyword detection in agent outputs."""
@@ -174,15 +156,9 @@ class TestVerifyOutputSafety:
         assert not verify_output_safety("")
 
     def test_partial_keyword_not_matched(self):
-        # "prescrib" does not match "prescribing information" by itself — behavior test
         result = verify_output_safety("Follow the prescription label.")
-        # "prescription" doesn't contain any safety keyword
         assert not result
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  enforce_safety_disclaimer
-# ══════════════════════════════════════════════════════════════════════════════
 
 class TestEnforceSafetyDisclaimer:
     """Tests for appending / skipping the medical disclaimer."""
@@ -209,11 +185,6 @@ class TestEnforceSafetyDisclaimer:
     def test_verify_output_safe_after_enforcement(self):
         result = enforce_safety_disclaimer("Something without safety keywords.")
         assert verify_output_safety(result)
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  encrypt_data / decrypt_data
-# ══════════════════════════════════════════════════════════════════════════════
 
 class TestEncryptDecrypt:
     """Tests for the XOR-based local encryption round-trip."""
@@ -264,10 +235,6 @@ class TestEncryptDecrypt:
         data = {"patient": {"name": "John", "meds": ["Aspirin"]}}
         assert decrypt_data(encrypt_data(data)) == data
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  MEDICAL_DISCLAIMER constant
-# ══════════════════════════════════════════════════════════════════════════════
 
 class TestMedicalDisclaimerConstant:
     def test_disclaimer_is_string(self):
