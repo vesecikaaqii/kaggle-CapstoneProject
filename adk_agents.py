@@ -121,7 +121,6 @@ if MODEL_NAME == "mock-model":
     logger.info("Registering MockLlm provider since GEMINI_API_KEY is not set.")
     LLMRegistry.register(MockLlm)
 
-# --- MCP Toolset Initialization ---
 server_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mcp_server.py")
 mcp_toolset = McpToolset(
     connection_params=StdioServerParameters(
@@ -189,7 +188,6 @@ def run_agent_query(user_id: str, session_id: str, query: str) -> str:
         auto_create_session=True
     )
 
-    # 4. Invoke agent
     user_message = types.Content(
         role="user",
         parts=[types.Part.from_text(text=masked_query)]
@@ -197,7 +195,6 @@ def run_agent_query(user_id: str, session_id: str, query: str) -> str:
     
     events = runner.run(user_id=user_id, session_id=session_id, new_message=user_message)
     
-    # 5. Extract response text
     response_text = ""
     for event in events:
         if event.content and event.content.parts:
@@ -208,7 +205,6 @@ def run_agent_query(user_id: str, session_id: str, query: str) -> str:
     if not response_text:
         response_text = "I'm sorry, I encountered an issue processing your request."
 
-    # 6. Apply output safety guardrail (append medical disclaimer if missing)
     final_output = enforce_safety_disclaimer(response_text)
     
     return final_output
