@@ -21,7 +21,7 @@ class MockLlm(BaseLlm):
 # Register the mock provider
 LLMRegistry.register(MockLlm)
 
-async def test_run():
+async def _run_mock_agent():
     agent = Agent(
         name="test_agent",
         model="mock-model",
@@ -29,7 +29,7 @@ async def test_run():
     )
     session_service = InMemorySessionService()
     session_service.create_session_sync(app_name="test_app", user_id="u1", session_id="s1")
-    
+
     runner = Runner(
         agent=agent,
         app_name="test_app",
@@ -40,8 +40,18 @@ async def test_run():
         parts=[types.Part.from_text(text="Hi")]
     )
     events = runner.run(user_id="u1", session_id="s1", new_message=user_message)
+    responses = []
     for event in events:
         print("Event:", event)
+        responses.append(event)
+    return responses
+
+
+def test_run():
+    """Synchronous wrapper so pytest doesn't need pytest-asyncio."""
+    responses = asyncio.run(_run_mock_agent())
+    # The mock LLM should produce at least one event
+    assert len(responses) > 0
 
 if __name__ == "__main__":
     asyncio.run(test_run())

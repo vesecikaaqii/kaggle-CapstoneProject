@@ -164,9 +164,13 @@ def generate_dosage_schedule(medications_and_dosing: List[Dict[str, str]], daily
         
         entry = f"{name} - {dose}"
         
-        if "once" in freq or "daily" in freq and "twice" not in freq and "three" not in freq and "every" not in freq:
-            # Morning default
-            schedule["Morning (approx. 8:00 AM)"].append(entry)
+        # Check specific time-of-day qualifiers FIRST before generic "once/daily"
+        if "night" in freq or "bedtime" in freq or "qhs" in freq:
+            schedule["Night (approx. 10:00 PM)"].append(entry)
+        elif "evening" in freq:
+            schedule["Evening (approx. 6:00 PM)"].append(entry)
+        elif "afternoon" in freq:
+            schedule["Afternoon (approx. 1:00 PM)"].append(entry)
         elif "twice" in freq or "2 times" in freq or "bid" in freq:
             schedule["Morning (approx. 8:00 AM)"].append(entry)
             schedule["Night (approx. 10:00 PM)"].append(entry)
@@ -179,14 +183,20 @@ def generate_dosage_schedule(medications_and_dosing: List[Dict[str, str]], daily
             schedule["Afternoon (approx. 1:00 PM)"].append(entry)
             schedule["Evening (approx. 6:00 PM)"].append(entry)
             schedule["Night (approx. 10:00 PM)"].append(entry)
-        elif "night" in freq or "bedtime" in freq or "qhs" in freq:
-            schedule["Night (approx. 10:00 PM)"].append(entry)
-        elif "evening" in freq:
-            schedule["Evening (approx. 6:00 PM)"].append(entry)
-        elif "afternoon" in freq:
-            schedule["Afternoon (approx. 1:00 PM)"].append(entry)
+        elif "every 8 hours" in freq or "every8" in freq:
+            schedule["Morning (approx. 8:00 AM)"].append(entry)
+            schedule["Afternoon (approx. 1:00 PM)"].append(entry + " (2nd dose ~4 PM)")
+            schedule["Night (approx. 10:00 PM)"].append(entry + " (3rd dose ~12 AM)")
+        elif "every 6 hours" in freq or "every6" in freq:
+            schedule["Morning (approx. 8:00 AM)"].append(entry)
+            schedule["Afternoon (approx. 1:00 PM)"].append(entry + " (2nd dose ~2 PM)")
+            schedule["Evening (approx. 6:00 PM)"].append(entry + " (3rd dose ~8 PM)")
+            schedule["Night (approx. 10:00 PM)"].append(entry + " (4th dose ~2 AM)")
+        elif ("once" in freq or "daily" in freq) and "twice" not in freq and "three" not in freq and "every" not in freq:
+            # Generic once-daily → morning default
+            schedule["Morning (approx. 8:00 AM)"].append(entry)
         else:
-            # Default to morning
+            # Unknown frequency — default to morning with annotation
             schedule["Morning (approx. 8:00 AM)"].append(entry + f" (Frequency: {freq.title()})")
             
     # Format schedule string
