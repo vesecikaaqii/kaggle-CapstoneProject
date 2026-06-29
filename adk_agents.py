@@ -13,21 +13,17 @@ from google.genai import types
 
 from security import mask_pii, enforce_safety_disclaimer
 
-# Setup logger
+
 logger = logging.getLogger("safemed-agents")
 logger.setLevel(logging.INFO)
 
-# Determine model based on API keys
+
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
 MODEL_NAME = "gemini-2.5-flash" if GEMINI_KEY else "mock-model"
 
-# --- Mock LLM Implementation for Offline/Testing Mode ---
+
 class MockLlm(BaseLlm):
-    """
-    Mock LLM implementation for SafeMed Concierge.
-    Simulates clinical triage, drug checks, and dosing schedule responses
-    to allow the app to be fully interactive without an active Gemini API key.
-    """
+    
     @classmethod
     def supported_models(cls) -> List[str]:
         return ["mock-model"]
@@ -85,7 +81,6 @@ class MockLlm(BaseLlm):
                 "*Recommendation:* Take ciprofloxacin at least 2 hours before or 6 hours after taking calcium supplements or antacids."
             )
         elif "schedule" in user_msg or "timetable" in user_msg or "daily calendar" in user_msg or "dosing" in user_msg:
-            # Generate a mock schedule
             response_text = (
                 "📅 **OPTIMIZED DOSAGE SCHEDULE TIMELINE**\n\n"
                 "Based on the medications provided, here is your organized daily schedule:\n\n"
@@ -122,7 +117,6 @@ class MockLlm(BaseLlm):
             )
         )
 
-# Register mock model if running in mock mode
 if MODEL_NAME == "mock-model":
     logger.info("Registering MockLlm provider since GEMINI_API_KEY is not set.")
     LLMRegistry.register(MockLlm)
@@ -136,9 +130,7 @@ mcp_toolset = McpToolset(
     )
 )
 
-# --- Sub-Agent Definitions ---
 
-# 1. Safety Interaction Agent
 safety_agent = Agent(
     name="safety_interaction_agent",
     model=MODEL_NAME,
@@ -153,7 +145,6 @@ safety_agent = Agent(
     )
 )
 
-# 2. Dosage Scheduling Agent
 dosage_agent = Agent(
     name="dosage_scheduling_agent",
     model=MODEL_NAME,
@@ -165,7 +156,6 @@ dosage_agent = Agent(
     )
 )
 
-# --- Primary Coordinator Agent ---
 triage_agent = Agent(
     name="triage_agent",
     model=MODEL_NAME,
@@ -181,7 +171,6 @@ triage_agent = Agent(
     )
 )
 
-# --- Runner & Session Service Implementation ---
 session_service = InMemorySessionService()
 
 def run_agent_query(user_id: str, session_id: str, query: str) -> str:
@@ -189,12 +178,10 @@ def run_agent_query(user_id: str, session_id: str, query: str) -> str:
     Masks PII, runs the query through the google-adk agent runner,
     and returns the sanitized, safety-checked response.
     """
-    # 1. Mask PII from user query
     masked_query, redacted_items = mask_pii(query)
     if redacted_items:
         logger.info(f"Redacted sensitive items in query: {redacted_items.keys()}")
         
-    # 2. Create Runner
     runner = Runner(
         agent=triage_agent,
         app_name="safemed_app",
