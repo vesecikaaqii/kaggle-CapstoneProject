@@ -27,15 +27,6 @@ def load_local_db() -> Dict[str, Any]:
 
 @mcp.tool()
 def check_local_interactions(drug_list: List[str]) -> str:
-    """
-    Checks a list of medications against a local database of high-risk drug interactions.
-    
-    Args:
-        drug_list (List[str]): List of medication/drug names to check.
-        
-    Returns:
-        str: A JSON-formatted string detailing any identified high-risk interactions.
-    """
     db = load_local_db()
     interactions = db.get("interactions", [])
     
