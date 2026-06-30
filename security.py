@@ -19,10 +19,6 @@ PII_PATTERNS = {
 }
 
 def mask_pii(text: str) -> Tuple[str, Dict[str, List[str]]]:
-    """
-    Scans the input text for PII (SSN, Phone, Email, DOB, ZIP) and replaces them with masked placeholders.
-    Returns the masked text and a dictionary of masked items for traceability.
-    """
     masked_text = text
     masked_items = {}
     
@@ -46,10 +42,6 @@ def mask_pii(text: str) -> Tuple[str, Dict[str, List[str]]]:
     return masked_text, masked_items
 
 def verify_output_safety(text: str) -> bool:
-    """
-    Verifies if the agent's output contains a safety disclaimer or recommendation
-    to consult a medical professional.
-    """
     safety_keywords = [
         "disclaimer",
         "consult",
@@ -64,9 +56,6 @@ def verify_output_safety(text: str) -> bool:
     return any(keyword in text_lower for keyword in safety_keywords)
 
 def enforce_safety_disclaimer(text: str) -> str:
-    """
-    Ensures a medical disclaimer is present in the response. If not found, appends it.
-    """
     if verify_output_safety(text):
         if "DISCLAIMER:" not in text:
             return text + MEDICAL_DISCLAIMER
@@ -77,9 +66,6 @@ def enforce_safety_disclaimer(text: str) -> str:
 ENCRYPTION_KEY = b"SafeMedSecretKey"
 
 def encrypt_data(data: dict) -> str:
-    """
-    Encrypts a data dictionary into an encrypted base64 string.
-    """
     serialized = json.dumps(data).encode("utf-8")
     encrypted = bytearray()
     for i, byte in enumerate(serialized):
@@ -88,9 +74,6 @@ def encrypt_data(data: dict) -> str:
     return base64.b64encode(encrypted).decode("utf-8")
 
 def decrypt_data(encrypted_str: str) -> dict:
-    """
-    Decrypts an encrypted base64 string back into a dictionary.
-    """
     try:
         encrypted_bytes = base64.b64decode(encrypted_str.encode("utf-8"))
         decrypted = bytearray()
