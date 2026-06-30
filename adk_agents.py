@@ -10,9 +10,7 @@ from google.adk.tools import McpToolset, AgentTool
 from google.adk.models import BaseLlm, LlmRequest, LlmResponse
 from google.adk.models.registry import LLMRegistry
 from google.genai import types
-
 from security import mask_pii, enforce_safety_disclaimer
-
 
 logger = logging.getLogger("safemed-agents")
 logger.setLevel(logging.INFO)
@@ -20,7 +18,6 @@ logger.setLevel(logging.INFO)
 
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
 MODEL_NAME = "gemini-2.5-flash" if GEMINI_KEY else "mock-model"
-
 
 class MockLlm(BaseLlm):
     
@@ -154,7 +151,6 @@ dosage_agent = Agent(
         "If there are specific instructions (like ciprofloxacin vs calcium), emphasize them in the schedule notes."
     )
 )
-
 triage_agent = Agent(
     name="triage_agent",
     model=MODEL_NAME,
@@ -169,7 +165,6 @@ triage_agent = Agent(
         "Ensure your response is helpful and ends with a friendly signature."
     )
 )
-
 session_service = InMemorySessionService()
 
 def run_agent_query(user_id: str, session_id: str, query: str) -> str:
