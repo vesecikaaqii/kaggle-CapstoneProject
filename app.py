@@ -4,7 +4,6 @@ import sys
 import json
 import logging
 from datetime import datetime
-
 from adk_agents import run_agent_query, MODEL_NAME, GEMINI_KEY
 from mcp_server import check_local_interactions, generate_dosage_schedule
 from security import MEDICAL_DISCLAIMER
@@ -20,7 +19,6 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* ─── Reset & Base ─── */
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
 }
@@ -44,7 +42,6 @@ html, body, [class*="css"] {
     color: #e2e8f0 !important;
 }
 
-/* ─── Main Text ─── */
 .stMarkdown, .stText, p, span, div {
     color: #cbd5e1;
 }
@@ -52,7 +49,6 @@ h1, h2, h3, h4 {
     color: #e2e8f0 !important;
 }
 
-/* ─── Header Banner ─── */
 .header-banner {
     background: linear-gradient(135deg, #0f4c81 0%, #0369a1 50%, #0891b2 100%);
     border-radius: 20px;
@@ -88,7 +84,6 @@ h1, h2, h3, h4 {
     max-width: 75%;
 }
 
-/* ─── Status Pills ─── */
 .status-bar {
     display: flex;
     gap: 10px;
@@ -109,7 +104,6 @@ h1, h2, h3, h4 {
 .pill-green { background: rgba(52, 211, 153, 0.12); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
 .pill-amber { background: rgba(251, 191, 36, 0.12);  color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
 
-/* ─── Glass Card ─── */
 .glass-card {
     background: rgba(15, 23, 42, 0.7);
     backdrop-filter: blur(16px);
@@ -144,7 +138,6 @@ h1, h2, h3, h4 {
     font-weight: 700;
 }
 
-/* ─── Medication Cards ─── */
 .med-card {
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 36, 64, 0.85));
     border-radius: 14px;
@@ -177,8 +170,7 @@ h1, h2, h3, h4 {
     font-weight: 600;
     white-space: nowrap;
 }
-
-/* ─── Interaction Alert Cards ─── */
+            
 .alert-critical {
     background: linear-gradient(135deg, rgba(127, 29, 29, 0.5), rgba(185, 28, 28, 0.2));
     border-left: 5px solid #ef4444;
@@ -229,7 +221,6 @@ h1, h2, h3, h4 {
     50%       { box-shadow: 0 8px 32px rgba(239, 68, 68, 0.45); }
 }
 
-/* ─── Timeline Schedule ─── */
 .timeline-slot {
     display: flex;
     gap: 16px;
@@ -270,7 +261,6 @@ h1, h2, h3, h4 {
     font-style: italic;
 }
 
-/* ─── Chat Bubbles ─── */
 .chat-bubble-user {
     display: flex;
     justify-content: flex-end;
@@ -314,7 +304,6 @@ h1, h2, h3, h4 {
     margin-top: 4px;
 }
 
-/* ─── Sidebar Inputs ─── */
 .stTextInput input {
     background: rgba(15, 23, 42, 0.8) !important;
     color: #e2e8f0 !important;
@@ -332,7 +321,6 @@ h1, h2, h3, h4 {
     border-radius: 8px !important;
 }
 
-/* ─── Buttons ─── */
 .stButton > button {
     background: linear-gradient(135deg, #0369a1, #0891b2) !important;
     color: white !important;
@@ -351,7 +339,6 @@ h1, h2, h3, h4 {
     transform: translateY(0) !important;
 }
 
-/* ─── Danger Button ─── */
 .danger-btn > button {
     background: linear-gradient(135deg, #7f1d1d, #991b1b) !important;
     box-shadow: 0 4px 12px rgba(153, 27, 27, 0.3) !important;
@@ -360,7 +347,6 @@ h1, h2, h3, h4 {
     box-shadow: 0 8px 20px rgba(153, 27, 27, 0.45) !important;
 }
 
-/* ─── Form ─── */
 .stForm {
     background: rgba(15, 23, 42, 0.6) !important;
     border: 1px solid rgba(56, 189, 248, 0.1) !important;
@@ -368,7 +354,6 @@ h1, h2, h3, h4 {
     padding: 20px !important;
 }
 
-/* ─── Chat Input ─── */
 .stChatInput > div {
     background: rgba(15, 23, 42, 0.85) !important;
     border: 1px solid rgba(56, 189, 248, 0.2) !important;
@@ -379,12 +364,10 @@ h1, h2, h3, h4 {
     font-family: 'Inter', sans-serif !important;
 }
 
-/* ─── Spinner ─── */
 .stSpinner > div {
     border-color: #38bdf8 transparent transparent transparent !important;
 }
 
-/* ─── Expander ─── */
 .streamlit-expanderHeader {
     background: rgba(15, 23, 42, 0.6) !important;
     border: 1px solid rgba(56, 189, 248, 0.12) !important;
@@ -392,7 +375,6 @@ h1, h2, h3, h4 {
     color: #94a3b8 !important;
 }
 
-/* ─── Tabs ─── */
 .stTabs [data-baseweb="tab-list"] {
     background: rgba(15, 23, 42, 0.5) !important;
     border-radius: 10px !important;
@@ -408,20 +390,17 @@ h1, h2, h3, h4 {
     color: #38bdf8 !important;
 }
 
-/* ─── File uploader ─── */
 .stFileUploader {
     border: 2px dashed rgba(56, 189, 248, 0.2) !important;
     border-radius: 12px !important;
     background: rgba(15, 23, 42, 0.4) !important;
 }
 
-/* ─── Checkbox ─── */
 .stCheckbox label {
     color: #94a3b8 !important;
     font-size: 0.9rem !important;
 }
 
-/* ─── Quick Test Card ─── */
 .quick-test-card {
     background: rgba(56, 189, 248, 0.06);
     border: 1px dashed rgba(56, 189, 248, 0.2);
@@ -430,7 +409,6 @@ h1, h2, h3, h4 {
     margin-bottom: 10px;
 }
 
-/* ─── Disclaimer ─── */
 .disclaimer-box {
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(56, 189, 248, 0.1);
@@ -442,18 +420,15 @@ h1, h2, h3, h4 {
     line-height: 1.5;
 }
 
-/* ─── Container heights ─── */
 [data-testid="stVerticalBlockBorderWrapper"] {
     border-radius: 16px !important;
 }
 
-/* ─── Scrollbar ─── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: rgba(15,23,42,0.4); }
 ::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.2); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(56,189,248,0.4); }
 
-/* ─── Divider ─── */
 hr { border-color: rgba(56, 189, 248, 0.1) !important; }
 
 /* ─── Success / Warning / Info ─── */
