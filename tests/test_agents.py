@@ -1,11 +1,3 @@
-"""
-test_agents.py
-==============
-Integration tests for the SafeMed Concierge agent system.
-Covers: PII masking, interaction DB, disclaimer enforcement,
-        encryption round-trip, agent query runner.
-"""
-
 import pytest
 import os
 import json
@@ -16,11 +8,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from security import mask_pii, verify_output_safety, enforce_safety_disclaimer, encrypt_data, decrypt_data
 from mcp_server import check_local_interactions, search_fda_drug_label, generate_dosage_schedule
 from adk_agents import run_agent_query, MODEL_NAME
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  PII Masking Integration
-# ══════════════════════════════════════════════════════════════════════════════
 
 class TestPiiMasking:
 
@@ -49,10 +36,6 @@ class TestPiiMasking:
         assert masked == text
         assert redacted == {}
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  Interaction Database
-# ══════════════════════════════════════════════════════════════════════════════
 
 class TestLocalInteractionsDatabase:
 
@@ -99,11 +82,6 @@ class TestLocalInteractionsDatabase:
         res = json.loads(check_local_interactions(["WARFARIN", "ASPIRIN"]))
         assert res["status"] == "Warning"
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  Safety Disclaimer
-# ══════════════════════════════════════════════════════════════════════════════
-
 class TestSafetyDisclaimer:
 
     def test_unsafe_text_flagged(self):
@@ -121,11 +99,6 @@ class TestSafetyDisclaimer:
         text = "DISCLAIMER: This is for informational purposes. Consult a pharmacist."
         result = enforce_safety_disclaimer(text)
         assert result.count("DISCLAIMER:") == 1
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  Secure Storage Encryption
-# ══════════════════════════════════════════════════════════════════════════════
 
 class TestSecureStorage:
 
@@ -147,11 +120,6 @@ class TestSecureStorage:
     def test_invalid_ciphertext_returns_empty(self):
         assert decrypt_data("!!INVALID!!") == {}
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  Dosage Schedule (bug-fix regression)
-# ══════════════════════════════════════════════════════════════════════════════
-
 class TestDosageScheduleRegression:
 
     def test_once_daily_at_night_not_in_morning(self):
@@ -168,11 +136,6 @@ class TestDosageScheduleRegression:
         afternoon_idx = schedule.find("Afternoon (approx. 1:00 PM):")
         morning_section = schedule[morning_idx:afternoon_idx]
         assert "Simvastatin" not in morning_section, "Simvastatin must NOT appear in the Morning section"
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  Agent Query Runner (end-to-end)
-# ══════════════════════════════════════════════════════════════════════════════
 
 class TestAgentQueryRunner:
 
