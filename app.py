@@ -431,7 +431,6 @@ h1, h2, h3, h4 {
 
 hr { border-color: rgba(56, 189, 248, 0.1) !important; }
 
-/* ─── Success / Warning / Info ─── */
 .stSuccess { background: rgba(5,46,22,0.4) !important; border: 1px solid rgba(34,197,94,0.2) !important; color: #86efac !important; border-radius: 10px !important; }
 .stWarning { background: rgba(120,100,15,0.3) !important; border: 1px solid rgba(234,179,8,0.2) !important; color: #fde047 !important; border-radius: 10px !important; }
 .stInfo    { background: rgba(3,105,161,0.2) !important; border: 1px solid rgba(56,189,248,0.2) !important; color: #7dd3fc !important; border-radius: 10px !important; }
